@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>📚 امتحان المراجعة الشامل - رياضيات الصف العاشر العام</title>
+<meta name="description" content="امتحان مراجعة شامل يغطي جميع مواضيع رياضيات الصف العاشر - 30 سؤالاً">
+<meta name="author" content="Mr. Mohammed Hesham">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+body { font-family: 'Cairo', sans-serif; }
+body.en-mode { font-family: 'Inter', sans-serif; }
+.correct { background-color: #dcfce7 !important; border-color: #16a34a !important; }
+.incorrect { background-color: #fee2e2 !important; border-color: #dc2626 !important; }
+.timer-warning { color: #dc2626 !important; animation: pulse 1s infinite; }
+@keyframes pulse { 50% { opacity: 0.7; } }
+@media print { .no-print { display: none !important; } }
+.success-badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-weight: bold; font-size: 0.875rem; }
+.grade-excellent { background: #dcfce7; color: #166534; }
+.grade-good { background: #fef3c7; color: #92400e; }
+.grade-pass { background: #dbeafe; color: #1e40af; }
+.grade-fail { background: #fee2e2; color: #991b1b; }
+.lang-switch {
+position: fixed; top: 16px; left: 16px; z-index: 100;
+background: white; padding: 6px; border-radius: 30px;
+box-shadow: 0 4px 15px rgba(0,0,0,0.15); display: flex; gap: 4px;
+border: 2px solid #7c3aed;
+}
+[dir="ltr"] .lang-switch { left: auto; right: 16px; }
+.lang-btn {
+padding: 6px 14px; border-radius: 20px; cursor: pointer; font-weight: bold;
+transition: all 0.3s; border: none; font-size: 0.875rem;
+background: transparent; color: #6b7280;
+}
+.lang-btn.active { background: #7c3aed; color: white; box-shadow: 0 2px 6px rgba(124,58,237,0.4); }
+.lang-btn:hover:not(.active) { background: #f5f3ff; color: #7c3aed; }
+.shuffle-badge {
+display: inline-block;
+background: linear-gradient(135deg, #7c3aed, #ec4899);
+color: white;
+padding: 4px 12px;
+border-radius: 20px;
+font-size: 0.75rem;
+font-weight: bold;
+margin-right: 8px;
+animation: pulse 2s infinite;
+}
+.math-display {
+display: inline-block;
+direction: ltr;
+font-family: 'Times New Roman', 'Cambria Math', serif;
+font-size: 1.2em;
+font-style: italic;
+padding: 2px 8px;
+background: #f5f3ff;
+border-radius: 6px;
+margin: 2px;
+color: #5b21b6;
+font-weight: 600;
+letter-spacing: 0.5px;
+}
+.save-indicator {
+position: fixed; bottom: 20px; left: 20px; z-index: 200;
+background: #10b981; color: white; padding: 8px 16px;
+border-radius: 20px; font-size: 0.8rem; font-weight: bold;
+opacity: 0; transition: opacity 0.3s; pointer-events: none;
+box-shadow: 0 4px 12px rgba(16,185,129,0.4);
+}
+.save-indicator.show { opacity: 1; }
+</style>
+</head>
+<body class="bg-gradient-to-br from-purple-50 to-pink-50 text-gray-800 p-4 md:p-8 min-h-screen">
+<div class="lang-switch no-print">
+<button class="lang-btn active" onclick="setLanguage('ar')" id="btn-ar">عربي</button>
+<button class="lang-btn" onclick="setLanguage('en')" id="btn-en">EN</button>
+</div>
+<div id="saveIndicator" class="save-indicator">💾 <span data-ar="تم الحفظ" data-en="Saved">تم الحفظ</span></div>
+<div id="timer-container" class="max-w-4xl mx-auto mb-4 text-center no-print">
+<div class="bg-white p-4 rounded-2xl shadow-md inline-block border-2 border-purple-100">
+<span class="text-gray-600 ml-2" data-ar="⏰ الوقت المتبقي:" data-en="⏰ Time Remaining:">⏰ الوقت المتبقي:</span>
+<span id="timer" class="text-2xl font-bold text-purple-600 font-mono">90:00</span>
+<span class="shuffle-badge" data-ar="🎲 أسئلة عشوائية" data-en="🎲 Random Questions">🎲 أسئلة عشوائية</span>
+</div>
+</div>
+<div class="max-w-4xl mx-auto mb-6 flex flex-wrap gap-3 justify-center no-print">
+<button onclick="toggleAnswers()" class="bg-purple-600 hover:bg-purple-700 text-white px-5 py-2 rounded-xl font-medium transition shadow cursor-pointer" data-ar="👀 إظهار / إخفاء الإجابات" data-en="👀 Show / Hide Answers">👀 إظهار / إخفاء الإجابات</button>
+<button onclick="window.print()" class="bg-gray-700 hover:bg-gray-900 text-white px-5 py-2 rounded-xl font-medium transition shadow cursor-pointer" data-ar="🖨️ طباعة" data-en="🖨️ Print">🖨️ طباعة</button>
+<button onclick="reshuffleExam()" class="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-5 py-2 rounded-xl font-medium transition shadow cursor-pointer" data-ar="🔄 أسئلة جديدة" data-en="🔄 New Questions">🔄 أسئلة جديدة</button>
+<button onclick="clearProgress()" class="bg-red-500 hover:bg-red-600 text-white px-5 py-2 rounded-xl font-medium transition shadow cursor-pointer" data-ar="🗑️ مسح التقدم" data-en="🗑️ Clear Progress">🗑️ مسح التقدم</button>
+</div>
+<header class="max-w-4xl mx-auto bg-white p-6 rounded-2xl shadow-lg mb-8 border-4 border-purple-400">
+<div class="text-center">
+<h1 class="text-2xl md:text-3xl font-bold text-gray-900 mb-2" data-ar="📚 امتحان المراجعة الشامل" data-en="📚 Comprehensive Review Exam">📚 امتحان المراجعة الشامل</h1>
+<h2 class="text-lg text-purple-600 font-semibold" data-ar="الصف العاشر - عام (رياضيات)" data-en="Grade 10 - General (Mathematics)">الصف العاشر - عام (رياضيات)</h2>
+<p class="text-sm text-gray-600 mt-2" data-ar="يشمل: جمع وطرح كثيرات الحدود، الضرب، الحالات الخاصة، خاصية التوزيع، والتحليل" data-en="Covers: Adding/Subtracting Polynomials, Multiplication, Special Products, Distributive Property, and Factoring">يشمل: جمع وطرح كثيرات الحدود، الضرب، الحالات الخاصة، خاصية التوزيع، والتحليل</p>
+<p class="text-xs text-green-600 mt-2 font-semibold" data-ar="💾 يتم حفظ تقدمك تلقائياً - 30 سؤالاً في 6 أقسام" data-en="💾 Your progress is saved automatically - 30 questions in 6 sections">💾 يتم حفظ تقدمك تلقائياً - 30 سؤالاً في 6 أقسام</p>
+</div>
+<div class="mt-4 flex flex-wrap justify-center gap-4 text-sm text-gray-600">
+<span><span data-ar="📅 التاريخ:" data-en="📅 Date:">📅 التاريخ:</span> <input type="text" id="examDate" class="border-b-2 border-purple-300 bg-transparent w-28 text-center"></span>
+<span><span data-ar="😊 الاسم:" data-en="😊 Name:">😊 الاسم:</span> <input type="text" id="studentName" class="border-b-2 border-purple-300 bg-transparent w-32 text-center" placeholder="اكتب اسمك"></span>
+<span><span data-ar="🏫 الشعبة:" data-en="🏫 Class:">🏫 الشعبة:</span> <input type="text" id="studentClass" class="border-b-2 border-purple-300 bg-transparent w-28 text-center" placeholder="الشعبة"></span>
+<span><span data-ar="⏰ المدة: 90 دقيقة" data-en="⏰ Duration: 90 min">⏰ المدة: 90 دقيقة</span></span>
+<span><span data-ar="📊 المجموع: 100 درجة" data-en="📊 Total: 100 pts">📊 المجموع: 100 درجة</span></span>
+</div>
+</header>
+<main class="max-w-4xl mx-auto space-y-8" id="exam-content"></main>
+<div class="text-center no-print pb-8 mt-8">
+<button onclick="gradeExam()" class="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white text-lg px-10 py-4 rounded-2xl font-bold shadow-xl transition transform hover:scale-105 cursor-pointer" data-ar="🎯 صحح إجاباتي!" data-en="🎯 Grade My Answers!">🎯 صحح إجاباتي!</button>
+</div>
+<div id="results-panel" class="max-w-4xl mx-auto mt-8 bg-white p-8 rounded-2xl shadow-2xl border-4 border-purple-400 hidden no-print">
+<h2 class="text-3xl font-bold text-gray-900 mb-6 text-center" data-ar="🏆 نتيجتك يا بطل! 🏆" data-en="🏆 Your Results, Champion! 🏆">🏆 نتيجتك يا بطل! 🏆</h2>
+<div class="grid md:grid-cols-3 gap-4 mb-6">
+<div class="bg-purple-50 p-4 rounded-xl text-center"><p data-ar="😊 الاسم" data-en="😊 Name">😊 الاسم</p><p id="res-name" class="font-bold text-xl text-purple-700">-</p></div>
+<div class="bg-pink-50 p-4 rounded-xl text-center"><p data-ar="📅 التاريخ" data-en="📅 Date">📅 التاريخ</p><p id="res-date" class="font-bold text-xl text-pink-700">-</p></div>
+<div class="bg-purple-50 p-4 rounded-xl text-center"><p data-ar="🌟 المجموع" data-en="🌟 Score">🌟 المجموع</p><p id="res-total" class="font-bold text-3xl text-purple-600">0 / 100</p></div>
+</div>
+<div class="text-center mb-6">
+<span id="success-badge" class="success-badge grade-excellent">-</span>
+<p id="success-percent" class="text-4xl font-bold text-purple-600 mt-2">0%</p>
+<p class="text-sm text-gray-500" data-ar="نسبة النجاح" data-en="Success Rate">نسبة النجاح</p>
+</div>
+<div class="bg-gray-50 p-6 rounded-xl mb-6">
+<h3 class="font-bold text-lg mb-4 text-gray-800" data-ar="📊 أدائك في كل قسم:" data-en="📊 Your Performance:">📊 أدائك في كل قسم:</h3>
+<div class="space-y-3" id="sections-performance"></div>
+</div>
+<div class="text-center mb-6">
+<button id="sendEmailBtn" onclick="sendResultsToEmail()" class="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white text-lg px-8 py-3 rounded-2xl font-bold shadow-xl transition transform hover:scale-105 cursor-pointer" data-ar="📧 أرسل النتيجة للمعلم" data-en="📧 Send Results to Teacher">📧 أرسل النتيجة للمعلم</button>
+<p id="emailStatus" class="text-sm mt-2 text-center font-medium"></p>
+</div>
+<div class="flex gap-3 justify-center">
+<button onclick="window.print()" class="bg-gray-700 text-white px-6 py-3 rounded-xl font-semibold" data-ar="🖨️ طباعة النتيجة" data-en="🖨️ Print Results">🖨️ طباعة النتيجة</button>
+</div>
+</div>
+<footer class="max-w-4xl mx-auto mt-10 mb-8 text-center text-gray-500 text-sm no-print">
+© <span data-ar="امتحان المراجعة الشامل - الصف العاشر" data-en="Comprehensive Review Exam - Grade 10">امتحان المراجعة الشامل - الصف العاشر</span> | Mr. Mohammed Hesham 📚
+</footer>
+<script>
+// ==================== EmailJS Settings ====================
+const PUBLIC_KEY = "Rb3Lq8tXaFmc5YHUH";
+const SERVICE_ID = "service_w15m64i";
+const TEMPLATE_ID = "template_5b0u2tq";
+const TARGET_EMAIL = "mohammedhesham872@gmail.com";
+emailjs.init(PUBLIC_KEY);
+
+// ==================== 💾 نظام حفظ التقدم ====================
+const STORAGE_KEY = 'comprehensive_review_grade10_exam_v1';
+const TOTAL_TIME = 5400; // 90 minutes
+const TOTAL_QUESTIONS = 30;
+const TOTAL_SECTIONS = 6;
+const QUESTIONS_PER_SECTION = 5;
+
+let currentSeed = null;
+let answersVisible = false;
+let saveIndicatorTimeout = null;
+
+function mulberry32(a) {
+return function() {
+var t = a += 0x6D2B79F5;
+t = Math.imul(t ^ t >>> 15, t | 1);
+t ^= t + Math.imul(t ^ t >>> 7, t | 61);
+return ((t ^ t >>> 14) >>> 0) / 4294967296;
+}
+}
+
+let rng = null;
+
+function showSaveIndicator() {
+const indicator = document.getElementById('saveIndicator');
+indicator.classList.add('show');
+if (saveIndicatorTimeout) clearTimeout(saveIndicatorTimeout);
+saveIndicatorTimeout = setTimeout(() => indicator.classList.remove('show'), 1500);
+}
+
+function saveState(showIndicator = true) {
+try {
+const state = {
+seed: currentSeed,
+lang: currentLang,
+studentName: document.getElementById('studentName').value,
+studentClass: document.getElementById('studentClass').value,
+examDate: document.getElementById('examDate').value,
+answers: getSelectedAnswers(),
+timeRemaining: timeRemaining,
+answersVisible: answersVisible,
+savedAt: Date.now()
+};
+localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+if (showIndicator) showSaveIndicator();
+} catch (e) { console.error('خطأ في الحفظ:', e); }
+}
+
+function loadState() {
+try {
+const saved = localStorage.getItem(STORAGE_KEY);
+if (saved) return JSON.parse(saved);
+} catch (e) { console.error('خطأ في التحميل:', e); }
+return null;
+}
+
+function getSelectedAnswers() {
+const answers = {};
+for (let i = 0; i < TOTAL_QUESTIONS; i++) {
+const selected = document.querySelector(`input[name="q${i}"]:checked`);
+if (selected) answers[i] = selected.value;
+}
+return answers;
+}
+
+function restoreAnswers(answers) {
+if (!answers) return;
+for (const [idx, val] of Object.entries(answers)) {
+const radio = document.querySelector(`input[name="q${idx}"][value="${val}"]`);
+if (radio) radio.checked = true;
+}
+}
+
+function clearProgress() {
+const confirmMsg = currentLang === 'ar'
+? '⚠️ هل أنت متأكد من مسح كل التقدم؟'
+: '⚠️ Are you sure you want to clear all progress?';
+if (confirm(confirmMsg)) {
+localStorage.removeItem(STORAGE_KEY);
+location.reload();
+}
+}
+
+function setupAnswerListeners() {
+document.getElementById('exam-content').addEventListener('change', (e) => {
+if (e.target.type === 'radio') saveState();
+});
+}
+
+function setupInputListeners() {
+['studentName', 'studentClass', 'examDate'].forEach(id => {
+const el = document.getElementById(id);
+if (el) {
+el.addEventListener('input', () => saveState(false));
+el.addEventListener('blur', () => saveState());
+}
+});
+}
+
+// ==================== بيانات الامتحان - 30 سؤالاً ====================
+const originalExamData = {
+sections: [
+// ========== القسم 1: جمع وطرح كثيرات الحدود (5 أسئلة) ==========
+{
+id: 'sec1',
+title: { ar: '🔹 القسم 1: جمع وطرح كثيرات الحدود', en: '🔹 Section 1: Adding & Subtracting Polynomials' },
+questions: [
+{
+q: { ar: 'ما درجة كثير الحدود <span class="math-display">P(x) = 3x⁴ + 2x² - x + 5</span>؟', en: 'What is the degree of <span class="math-display">P(x) = 3x⁴ + 2x² - x + 5</span>?' },
+options: [
+{ ar: '<span class="math-display">4</span>', en: '<span class="math-display">4</span>' },
+{ ar: '<span class="math-display">3</span>', en: '<span class="math-display">3</span>' },
+{ ar: '<span class="math-display">5</span>', en: '<span class="math-display">5</span>' },
+{ ar: '<span class="math-display">2</span>', en: '<span class="math-display">2</span>' }
+],
+correct: 0,
+answer: { ar: 'الدرجة = أعلى أس في كثير الحدود = 4 (من الحد 3x⁴)', en: 'Degree = highest exponent = 4 (from term 3x⁴)' }
+},
+{
+q: { ar: 'احسب: <span class="math-display">(2x² + 3x - 1) + (x² - 2x + 4)</span>', en: 'Calculate: <span class="math-display">(2x² + 3x - 1) + (x² - 2x + 4)</span>' },
+options: [
+{ ar: '<span class="math-display">3x² + x + 3</span>', en: '<span class="math-display">3x² + x + 3</span>' },
+{ ar: '<span class="math-display">3x² + 5x + 3</span>', en: '<span class="math-display">3x² + 5x + 3</span>' },
+{ ar: '<span class="math-display">x² + x + 3</span>', en: '<span class="math-display">x² + x + 3</span>' },
+{ ar: '<span class="math-display">3x² + x - 3</span>', en: '<span class="math-display">3x² + x - 3</span>' }
+],
+correct: 0,
+answer: { ar: '(2x² + x²) + (3x - 2x) + (-1 + 4) = 3x² + x + 3', en: '(2x² + x²) + (3x - 2x) + (-1 + 4) = 3x² + x + 3' }
+},
+{
+q: { ar: 'احسب: <span class="math-display">(5x² + 4x - 3) - (2x² - x + 1)</span>', en: 'Calculate: <span class="math-display">(5x² + 4x - 3) - (2x² - x + 1)</span>' },
+options: [
+{ ar: '<span class="math-display">3x² + 5x - 4</span>', en: '<span class="math-display">3x² + 5x - 4</span>' },
+{ ar: '<span class="math-display">3x² + 3x - 4</span>', en: '<span class="math-display">3x² + 3x - 4</span>' },
+{ ar: '<span class="math-display">7x² + 3x - 2</span>', en: '<span class="math-display">7x² + 3x - 2</span>' },
+{ ar: '<span class="math-display">3x² + 5x - 2</span>', en: '<span class="math-display">3x² + 5x - 2</span>' }
+],
+correct: 0,
+answer: { ar: '5x² + 4x - 3 - 2x² + x - 1 = 3x² + 5x - 4', en: '5x² + 4x - 3 - 2x² + x - 1 = 3x² + 5x - 4' }
+},
+{
+q: { ar: 'بسّط: <span class="math-display">2(3x + 1) + 3(x - 2)</span>', en: 'Simplify: <span class="math-display">2(3x + 1) + 3(x - 2)</span>' },
+options: [
+{ ar: '<span class="math-display">9x - 4</span>', en: '<span class="math-display">9x - 4</span>' },
+{ ar: '<span class="math-display">9x + 8</span>', en: '<span class="math-display">9x + 8</span>' },
+{ ar: '<span class="math-display">6x - 4</span>', en: '<span class="math-display">6x - 4</span>' },
+{ ar: '<span class="math-display">9x - 8</span>', en: '<span class="math-display">9x - 8</span>' }
+],
+correct: 0,
+answer: { ar: '6x + 2 + 3x - 6 = 9x - 4', en: '6x + 2 + 3x - 6 = 9x - 4' }
+},
+{
+q: { ar: 'مستطيل طوله <span class="math-display">(3x + 2)</span> وعرضه <span class="math-display">(2x + 1)</span>. ما محيطه؟', en: 'A rectangle has length <span class="math-display">(3x + 2)</span> and width <span class="math-display">(2x + 1)</span>. What is its perimeter?' },
+options: [
+{ ar: '<span class="math-display">10x + 6</span>', en: '<span class="math-display">10x + 6</span>' },
+{ ar: '<span class="math-display">5x + 3</span>', en: '<span class="math-display">5x + 3</span>' },
+{ ar: '<span class="math-display">6x + 4</span>', en: '<span class="math-display">6x + 4</span>' },
+{ ar: '<span class="math-display">10x + 3</span>', en: '<span class="math-display">10x + 3</span>' }
+],
+correct: 0,
+answer: { ar: 'المحيط = 2(الطول + العرض) = 2[(3x+2) + (2x+1)] = 2(5x+3) = 10x + 6', en: 'Perimeter = 2(length + width) = 2[(3x+2) + (2x+1)] = 2(5x+3) = 10x + 6' }
+}
+]
+},
+// ========== القسم 2: ضرب كثيرة الحدود في أحادية الحد (5 أسئلة) ==========
+{
+id: 'sec2',
+title: { ar: '🔹 القسم 2: ضرب كثيرة الحدود في أحادية الحد', en: '🔹 Section 2: Multiplying Polynomial by Monomial' },
+questions: [
+{
+q: { ar: "أوجد ناتج الضرب: <span class='math-display'>5w(-3w² + 2w - 4)</span>", en: "Find the product: <span class='math-display'>5w(-3w² + 2w - 4)</span>" },
+options: [
+{ ar: "<span class='math-display'>-15w³ + 10w² - 20w</span>", en: "<span class='math-display'>-15w³ + 10w² - 20w</span>" },
+{ ar: "<span class='math-display'>-15w³ - 10w² + 20w</span>", en: "<span class='math-display'>-15w³ - 10w² + 20w</span>" },
+{ ar: "<span class='math-display'>15w³ + 10w² - 20w</span>", en: "<span class='math-display'>15w³ + 10w² - 20w</span>" },
+{ ar: "<span class='math-display'>-15w² + 10w - 20</span>", en: "<span class='math-display'>-15w² + 10w - 20</span>" }
+],
+correct: 0,
+answer: { ar: "نوزع 5w على كل حد: -15w³ + 10w² - 20w", en: "Distribute 5w to each term: -15w³ + 10w² - 20w" }
+},
+{
+q: { ar: "بسط التعبير: <span class='math-display'>t(4t² + 15t + 4) - 4(3t - 1)</span>", en: "Simplify: <span class='math-display'>t(4t² + 15t + 4) - 4(3t - 1)</span>" },
+options: [
+{ ar: "<span class='math-display'>4t³ + 15t² - 8t + 4</span>", en: "<span class='math-display'>4t³ + 15t² - 8t + 4</span>" },
+{ ar: "<span class='math-display'>4t³ + 15t² + 16t - 4</span>", en: "<span class='math-display'>4t³ + 15t² + 16t - 4</span>" },
+{ ar: "<span class='math-display'>4t³ + 15t² - 8t - 4</span>", en: "<span class='math-display'>4t³ + 15t² - 8t - 4</span>" },
+{ ar: "<span class='math-display'>4t³ + 15t² + 8t + 4</span>", en: "<span class='math-display'>4t³ + 15t² + 8t + 4</span>" }
+],
+correct: 0,
+answer: { ar: "بفك الأقواس وجمع الحدود المتشابهة: 4t³ + 15t² - 8t + 4", en: "By expanding and combining like terms: 4t³ + 15t² - 8t + 4" }
+},
+{
+q: { ar: "حل المعادلة: <span class='math-display'>-6(11 - 2c) = 7(-2 - 2c)</span>", en: "Solve: <span class='math-display'>-6(11 - 2c) = 7(-2 - 2c)</span>" },
+options: [
+{ ar: "<span class='math-display'>c = 2</span>", en: "<span class='math-display'>c = 2</span>" },
+{ ar: "<span class='math-display'>c = -2</span>", en: "<span class='math-display'>c = -2</span>" },
+{ ar: "<span class='math-display'>c = 0</span>", en: "<span class='math-display'>c = 0</span>" },
+{ ar: "<span class='math-display'>c = 1</span>", en: "<span class='math-display'>c = 1</span>" }
+],
+correct: 0,
+answer: { ar: "بفك الأقواس: -66 + 12c = -14 - 14c → 26c = 52 → c = 2", en: "Expand: -66 + 12c = -14 - 14c → 26c = 52 → c = 2" }
+},
+{
+q: { ar: "أوجد ناتج الضرب: <span class='math-display'>2ab(7a⁴b² + a⁵b - 2a)</span>", en: "Find the product: <span class='math-display'>2ab(7a⁴b² + a⁵b - 2a)</span>" },
+options: [
+{ ar: "<span class='math-display'>14a⁵b³ + 2a⁶b² - 4a²b</span>", en: "<span class='math-display'>14a⁵b³ + 2a⁶b² - 4a²b</span>" },
+{ ar: "<span class='math-display'>14a⁴b³ + 2a⁵b² - 4ab</span>", en: "<span class='math-display'>14a⁴b³ + 2a⁵b² - 4ab</span>" },
+{ ar: "<span class='math-display'>9a⁵b³ + 2a⁶b² - 2a²b</span>", en: "<span class='math-display'>9a⁵b³ + 2a⁶b² - 2a²b</span>" },
+{ ar: "<span class='math-display'>14a⁵b³ + 2a⁵b² - 4ab</span>", en: "<span class='math-display'>14a⁵b³ + 2a⁵b² - 4ab</span>" }
+],
+correct: 0,
+answer: { ar: "بضرب كل حد: 14a⁵b³ + 2a⁶b² - 4a²b", en: "By multiplying each term: 14a⁵b³ + 2a⁶b² - 4a²b" }
+},
+{
+q: { ar: "عند تبسيط <span class='math-display'>3x(x + 2) - 2(x - 1)</span>، ما النتيجة النهائية؟", en: "When simplifying <span class='math-display'>3x(x + 2) - 2(x - 1)</span>, what is the final result?" },
+options: [
+{ ar: "<span class='math-display'>3x² + 4x + 2</span>", en: "<span class='math-display'>3x² + 4x + 2</span>" },
+{ ar: "<span class='math-display'>3x² + 6x - 2x + 2</span>", en: "<span class='math-display'>3x² + 6x - 2x + 2</span>" },
+{ ar: "<span class='math-display'>3x² + 4x - 2</span>", en: "<span class='math-display'>3x² + 4x - 2</span>" },
+{ ar: "<span class='math-display'>3x² + 8x + 2</span>", en: "<span class='math-display'>3x² + 8x + 2</span>" }
+],
+correct: 0,
+answer: { ar: "بفك الأقواس وجمع الحدود: 3x² + 6x - 2x + 2 = 3x² + 4x + 2", en: "By expanding and combining: 3x² + 6x - 2x + 2 = 3x² + 4x + 2" }
+}
+]
+},
+// ========== القسم 3: ضرب كثيرات الحدود (5 أسئلة) ==========
+{
+id: 'sec3',
+title: { ar: '🔹 القسم 3: ضرب كثيرات الحدود', en: '🔹 Section 3: Multiplying Polynomials' },
+questions: [
+{
+q: { ar: 'اضرب وبسط: <span class="math-display">(x + 3)(x + 4)</span>', en: 'Multiply and simplify: <span class="math-display">(x + 3)(x + 4)</span>' },
+options: [
+{ ar: '<span class="math-display">x² + 7x + 12</span>', en: '<span class="math-display">x² + 7x + 12</span>' },
+{ ar: '<span class="math-display">x² + 12x + 7</span>', en: '<span class="math-display">x² + 12x + 7</span>' },
+{ ar: '<span class="math-display">x² + 7x + 7</span>', en: '<span class="math-display">x² + 7x + 7</span>' },
+{ ar: '<span class="math-display">2x² + 7x + 12</span>', en: '<span class="math-display">2x² + 7x + 12</span>' }
+],
+correct: 0,
+answer: { ar: 'x·x + x·4 + 3·x + 3·4 = x² + 4x + 3x + 12 = x² + 7x + 12', en: 'x·x + x·4 + 3·x + 3·4 = x² + 4x + 3x + 12 = x² + 7x + 12' }
+},
+{
+q: { ar: 'اضرب وبسط (سؤال 4A): <span class="math-display">(3x - 5)(2x² + 7x - 8)</span>', en: 'Multiply and simplify (Q 4A): <span class="math-display">(3x - 5)(2x² + 7x - 8)</span>' },
+options: [
+{ ar: '<span class="math-display">6x³ + 11x² - 59x + 40</span>', en: '<span class="math-display">6x³ + 11x² - 59x + 40</span>' },
+{ ar: '<span class="math-display">6x³ + 21x² - 24x + 40</span>', en: '<span class="math-display">6x³ + 21x² - 24x + 40</span>' },
+{ ar: '<span class="math-display">6x³ - 11x² + 59x - 40</span>', en: '<span class="math-display">6x³ - 11x² + 59x - 40</span>' },
+{ ar: '<span class="math-display">6x³ + 11x² + 59x + 40</span>', en: '<span class="math-display">6x³ + 11x² + 59x + 40</span>' }
+],
+correct: 0,
+answer: { ar: '3x(2x²+7x-8) = 6x³+21x²-24x. -5(2x²+7x-8) = -10x²-35x+40. المجموع: 6x³ + 11x² - 59x + 40', en: '3x(2x²+7x-8) = 6x³+21x²-24x. -5(2x²+7x-8) = -10x²-35x+40. Sum: 6x³ + 11x² - 59x + 40' }
+},
+{
+q: { ar: 'اضرب وبسط (سؤال 4B): <span class="math-display">(m² + 2m - 3)(4m² - 7m + 5)</span>', en: 'Multiply and simplify (Q 4B): <span class="math-display">(m² + 2m - 3)(4m² - 7m + 5)</span>' },
+options: [
+{ ar: '<span class="math-display">4m⁴ + m³ - 21m² + 31m - 15</span>', en: '<span class="math-display">4m⁴ + m³ - 21m² + 31m - 15</span>' },
+{ ar: '<span class="math-display">4m⁴ - m³ + 21m² - 31m + 15</span>', en: '<span class="math-display">4m⁴ - m³ + 21m² - 31m + 15</span>' },
+{ ar: '<span class="math-display">4m⁴ + 8m³ - 12m² - 14m + 15</span>', en: '<span class="math-display">4m⁴ + 8m³ - 12m² - 14m + 15</span>' },
+{ ar: '<span class="math-display">4m⁴ + m³ + 21m² + 31m + 15</span>', en: '<span class="math-display">4m⁴ + m³ + 21m² + 31m + 15</span>' }
+],
+correct: 0,
+answer: { ar: 'm²(4m²-7m+5) = 4m⁴-7m³+5m². 2m(4m²-7m+5) = 8m³-14m²+10m. -3(4m²-7m+5) = -12m²+21m-15. المجموع: 4m⁴ + m³ - 21m² + 31m - 15', en: 'm²(4m²-7m+5) = 4m⁴-7m³+5m². 2m(4m²-7m+5) = 8m³-14m²+10m. -3(4m²-7m+5) = -12m²+21m-15. Sum: 4m⁴ + m³ - 21m² + 31m - 15' }
+},
+{
+q: { ar: 'مستطيل طوله <span class="math-display">(2x + 3)</span> وعرضه <span class="math-display">(x + 4)</span>. ما مساحة المستطيل؟', en: 'A rectangle has length <span class="math-display">(2x + 3)</span> and width <span class="math-display">(x + 4)</span>. What is its area?' },
+options: [
+{ ar: '<span class="math-display">2x² + 11x + 12</span>', en: '<span class="math-display">2x² + 11x + 12</span>' },
+{ ar: '<span class="math-display">2x² + 7x + 12</span>', en: '<span class="math-display">2x² + 7x + 12</span>' },
+{ ar: '<span class="math-display">3x² + 11x + 7</span>', en: '<span class="math-display">3x² + 11x + 7</span>' },
+{ ar: '<span class="math-display">2x² + 11x + 7</span>', en: '<span class="math-display">2x² + 11x + 7</span>' }
+],
+correct: 0,
+answer: { ar: 'المساحة = الطول × العرض = (2x+3)(x+4) = 2x² + 8x + 3x + 12 = 2x² + 11x + 12', en: 'Area = length × width = (2x+3)(x+4) = 2x² + 8x + 3x + 12 = 2x² + 11x + 12' }
+},
+{
+q: { ar: 'ما هو الحد الثابت في ناتج ضرب <span class="math-display">(2x - 3)(x² + 4x + 5)</span>؟', en: 'What is the constant term in the product of <span class="math-display">(2x - 3)(x² + 4x + 5)</span>?' },
+options: [
+{ ar: '<span class="math-display">-15</span>', en: '<span class="math-display">-15</span>' },
+{ ar: '<span class="math-display">15</span>', en: '<span class="math-display">15</span>' },
+{ ar: '<span class="math-display">-10</span>', en: '<span class="math-display">-10</span>' },
+{ ar: '<span class="math-display">10</span>', en: '<span class="math-display">10</span>' }
+],
+correct: 0,
+answer: { ar: 'الحد الثابت ينتج من ضرب الحدين الثابتين فقط: (-3) × 5 = -15', en: 'The constant term comes from multiplying only the constant terms: (-3) × 5 = -15' }
+}
+]
+},
+// ========== القسم 4: الحالات الخاصة لضرب كثيرات الحدود (5 أسئلة) ==========
+{
+id: 'sec4',
+title: { ar: '🔹 القسم 4: الحالات الخاصة لضرب كثيرات الحدود', en: '🔹 Section 4: Special Products of Polynomials' },
+questions: [
+{
+q: { ar: 'وسّع: <span class="math-display">(a + 10)²</span>', en: 'Expand: <span class="math-display">(a + 10)²</span>' },
+options: [
+{ ar: '<span class="math-display">a² + 20a + 100</span>', en: '<span class="math-display">a² + 20a + 100</span>' },
+{ ar: '<span class="math-display">a² + 100</span>', en: '<span class="math-display">a² + 100</span>' },
+{ ar: '<span class="math-display">a² + 10a + 100</span>', en: '<span class="math-display">a² + 10a + 100</span>' },
+{ ar: '<span class="math-display">a² + 20a + 10</span>', en: '<span class="math-display">a² + 20a + 10</span>' }
+],
+correct: 0,
+answer: { ar: '(a+10)² = a² + 2(a)(10) + 10² = a² + 20a + 100', en: '(a+10)² = a² + 2(a)(10) + 10² = a² + 20a + 100' }
+},
+{
+q: { ar: 'وسّع: <span class="math-display">(b - 6)²</span>', en: 'Expand: <span class="math-display">(b - 6)²</span>' },
+options: [
+{ ar: '<span class="math-display">b² - 12b + 36</span>', en: '<span class="math-display">b² - 12b + 36</span>' },
+{ ar: '<span class="math-display">b² - 36</span>', en: '<span class="math-display">b² - 36</span>' },
+{ ar: '<span class="math-display">b² - 6b + 36</span>', en: '<span class="math-display">b² - 6b + 36</span>' },
+{ ar: '<span class="math-display">b² + 12b + 36</span>', en: '<span class="math-display">b² + 12b + 36</span>' }
+],
+correct: 0,
+answer: { ar: '(b-6)² = b² - 2(b)(6) + 6² = b² - 12b + 36', en: '(b-6)² = b² - 2(b)(6) + 6² = b² - 12b + 36' }
+},
+{
+q: { ar: 'وسّع: <span class="math-display">(x + 5)(x - 5)</span>', en: 'Expand: <span class="math-display">(x + 5)(x - 5)</span>' },
+options: [
+{ ar: '<span class="math-display">x² - 25</span>', en: '<span class="math-display">x² - 25</span>' },
+{ ar: '<span class="math-display">x² + 25</span>', en: '<span class="math-display">x² + 25</span>' },
+{ ar: '<span class="math-display">x² - 10x - 25</span>', en: '<span class="math-display">x² - 10x - 25</span>' },
+{ ar: '<span class="math-display">x² - 10</span>', en: '<span class="math-display">x² - 10</span>' }
+],
+correct: 0,
+answer: { ar: '(x+5)(x-5) = x² - 5² = x² - 25', en: '(x+5)(x-5) = x² - 5² = x² - 25' }
+},
+{
+q: { ar: 'وسّع: <span class="math-display">(x + 2)³</span>', en: 'Expand: <span class="math-display">(x + 2)³</span>' },
+options: [
+{ ar: '<span class="math-display">x³ + 6x² + 12x + 8</span>', en: '<span class="math-display">x³ + 6x² + 12x + 8</span>' },
+{ ar: '<span class="math-display">x³ + 8</span>', en: '<span class="math-display">x³ + 8</span>' },
+{ ar: '<span class="math-display">x³ + 2x² + 4x + 8</span>', en: '<span class="math-display">x³ + 2x² + 4x + 8</span>' },
+{ ar: '<span class="math-display">x³ + 6x² + 4x + 8</span>', en: '<span class="math-display">x³ + 6x² + 4x + 8</span>' }
+],
+correct: 0,
+answer: { ar: '(x+2)³ = x³ + 3x²(2) + 3x(4) + 8 = x³ + 6x² + 12x + 8', en: '(x+2)³ = x³ + 3x²(2) + 3x(4) + 8 = x³ + 6x² + 12x + 8' }
+},
+{
+q: { ar: 'بسّط: <span class="math-display">(x+4)² - (x-4)²</span>', en: 'Simplify: <span class="math-display">(x+4)² - (x-4)²</span>' },
+options: [
+{ ar: '<span class="math-display">16x</span>', en: '<span class="math-display">16x</span>' },
+{ ar: '<span class="math-display">0</span>', en: '<span class="math-display">0</span>' },
+{ ar: '<span class="math-display">32</span>', en: '<span class="math-display">32</span>' },
+{ ar: '<span class="math-display">8x</span>', en: '<span class="math-display">8x</span>' }
+],
+correct: 0,
+answer: { ar: '(x²+8x+16) - (x²-8x+16) = 16x', en: '(x²+8x+16) - (x²-8x+16) = 16x' }
+}
+]
+},
+// ========== القسم 5: خاصية التوزيع والتحليل (5 أسئلة) ==========
+{
+id: 'sec5',
+title: { ar: '🔹 القسم 5: خاصية التوزيع والتحليل', en: '🔹 Section 5: Distributive Property & Factoring' },
+questions: [
+{
+q: { ar: 'حلل باستخدام خاصية التوزيع: <span class="math-display">16t - 40y</span>', en: 'Factor using distributive property: <span class="math-display">16t - 40y</span>' },
+options: [
+{ ar: '<span class="math-display">8(2t - 5y)</span>', en: '<span class="math-display">8(2t - 5y)</span>' },
+{ ar: '<span class="math-display">4(4t - 10y)</span>', en: '<span class="math-display">4(4t - 10y)</span>' },
+{ ar: '<span class="math-display">2(8t - 20y)</span>', en: '<span class="math-display">2(8t - 20y)</span>' },
+{ ar: '<span class="math-display">16(t - 2.5y)</span>', en: '<span class="math-display">16(t - 2.5y)</span>' }
+],
+correct: 0,
+answer: { ar: 'العامل المشترك الأكبر هو 8. إذن 16t - 40y = 8(2t - 5y)', en: 'The GCF is 8. So 16t - 40y = 8(2t - 5y)' }
+},
+{
+q: { ar: 'حلل بالتجميع: <span class="math-display">fg - 5g + 4f - 20</span>', en: 'Factor by grouping: <span class="math-display">fg - 5g + 4f - 20</span>' },
+options: [
+{ ar: '<span class="math-display">(f - 5)(g + 4)</span>', en: '<span class="math-display">(f - 5)(g + 4)</span>' },
+{ ar: '<span class="math-display">(f + 5)(g - 4)</span>', en: '<span class="math-display">(f + 5)(g - 4)</span>' },
+{ ar: '<span class="math-display">(f - 4)(g + 5)</span>', en: '<span class="math-display">(f - 4)(g + 5)</span>' },
+{ ar: '<span class="math-display">(f + 4)(g - 5)</span>', en: '<span class="math-display">(f + 4)(g - 5)</span>' }
+],
+correct: 0,
+answer: { ar: 'g(f - 5) + 4(f - 5) = (f - 5)(g + 4)', en: 'g(f - 5) + 4(f - 5) = (f - 5)(g + 4)' }
+},
+{
+q: { ar: 'حلل: <span class="math-display">4a²b² + 2a²b - 10ab²</span>', en: 'Factor: <span class="math-display">4a²b² + 2a²b - 10ab²</span>' },
+options: [
+{ ar: '<span class="math-display">2ab(2ab + a - 5b)</span>', en: '<span class="math-display">2ab(2ab + a - 5b)</span>' },
+{ ar: '<span class="math-display">2a(2ab² + ab - 5b²)</span>', en: '<span class="math-display">2a(2ab² + ab - 5b²)</span>' },
+{ ar: '<span class="math-display">2b(2a²b + a² - 5ab)</span>', en: '<span class="math-display">2b(2a²b + a² - 5ab)</span>' },
+{ ar: '<span class="math-display">ab(4ab + 2a - 10b)</span>', en: '<span class="math-display">ab(4ab + 2a - 10b)</span>' }
+],
+correct: 0,
+answer: { ar: 'العامل المشترك هو 2ab. إذن: 2ab(2ab + a - 5b)', en: 'The GCF is 2ab. So: 2ab(2ab + a - 5b)' }
+},
+{
+q: { ar: 'حلل: <span class="math-display">45pq - 27q - 50p + 30</span>', en: 'Factor: <span class="math-display">45pq - 27q - 50p + 30</span>' },
+options: [
+{ ar: '<span class="math-display">(5p - 3)(9q - 10)</span>', en: '<span class="math-display">(5p - 3)(9q - 10)</span>' },
+{ ar: '<span class="math-display">(5p + 3)(9q + 10)</span>', en: '<span class="math-display">(5p + 3)(9q + 10)</span>' },
+{ ar: '<span class="math-display">(9p - 5)(5q - 6)</span>', en: '<span class="math-display">(9p - 5)(5q - 6)</span>' },
+{ ar: '<span class="math-display">(9p + 5)(5q + 6)</span>', en: '<span class="math-display">(9p + 5)(5q + 6)</span>' }
+],
+correct: 0,
+answer: { ar: '9q(5p - 3) - 10(5p - 3) = (5p - 3)(9q - 10)', en: '9q(5p - 3) - 10(5p - 3) = (5p - 3)(9q - 10)' }
+},
+{
+q: { ar: 'حلل: <span class="math-display">18r³t² + 12r²t² - 6r²t</span>', en: 'Factor: <span class="math-display">18r³t² + 12r²t² - 6r²t</span>' },
+options: [
+{ ar: '<span class="math-display">6r²t(3rt + 2t - 1)</span>', en: '<span class="math-display">6r²t(3rt + 2t - 1)</span>' },
+{ ar: '<span class="math-display">6rt(3r²t + 2rt - r)</span>', en: '<span class="math-display">6rt(3r²t + 2rt - r)</span>' },
+{ ar: '<span class="math-display">3r²t(6rt + 4t - 2)</span>', en: '<span class="math-display">3r²t(6rt + 4t - 2)</span>' },
+{ ar: '<span class="math-display">2r²t(9rt + 6t - 3)</span>', en: '<span class="math-display">2r²t(9rt + 6t - 3)</span>' }
+],
+correct: 0,
+answer: { ar: 'العامل المشترك هو 6r²t. إذن: 6r²t(3rt + 2t - 1)', en: 'The GCF is 6r²t. So: 6r²t(3rt + 2t - 1)' }
+}
+]
+},
+// ========== القسم 6: تحليل كثيرات الحدود وحل المعادلات (5 أسئلة) ==========
+{
+id: 'sec6',
+title: { ar: '🔹 القسم 6: تحليل كثيرات الحدود وحل المعادلات', en: '🔹 Section 6: Factoring Polynomials & Solving Equations' },
+questions: [
+{
+q: { ar: 'حلل: <span class="math-display">x² + 17x + 42</span>', en: 'Factor: <span class="math-display">x² + 17x + 42</span>' },
+options: [
+{ ar: '<span class="math-display">(x + 3)(x + 14)</span>', en: '<span class="math-display">(x + 3)(x + 14)</span>' },
+{ ar: '<span class="math-display">(x + 2)(x + 21)</span>', en: '<span class="math-display">(x + 2)(x + 21)</span>' },
+{ ar: '<span class="math-display">(x + 6)(x + 7)</span>', en: '<span class="math-display">(x + 6)(x + 7)</span>' },
+{ ar: '<span class="math-display">(x + 1)(x + 42)</span>', en: '<span class="math-display">(x + 1)(x + 42)</span>' }
+],
+correct: 0,
+answer: { ar: 'نبحث عن عددين حاصل ضربهما 42 ومجموعهما 17: 3 و 14. إذن (x+3)(x+14)', en: 'Find two numbers with product 42 and sum 17: 3 and 14. So (x+3)(x+14)' }
+},
+{
+q: { ar: 'حل المعادلة: <span class="math-display">x² - 7x + 12 = 0</span>', en: 'Solve: <span class="math-display">x² - 7x + 12 = 0</span>' },
+options: [
+{ ar: '<span class="math-display">x = 3 أو x = 4</span>', en: '<span class="math-display">x = 3 or x = 4</span>' },
+{ ar: '<span class="math-display">x = -3 أو x = -4</span>', en: '<span class="math-display">x = -3 or x = -4</span>' },
+{ ar: '<span class="math-display">x = 2 أو x = 6</span>', en: '<span class="math-display">x = 2 or x = 6</span>' },
+{ ar: '<span class="math-display">x = 1 أو x = 12</span>', en: '<span class="math-display">x = 1 or x = 12</span>' }
+],
+correct: 0,
+answer: { ar: '(x-3)(x-4) = 0 → x = 3 أو x = 4', en: '(x-3)(x-4) = 0 → x = 3 or x = 4' }
+},
+{
+q: { ar: 'مثلث مساحته 36 ft². إذا كان الارتفاع أكبر من القاعدة بـ 1 ft، فما الارتفاع؟', en: 'A triangle has area 36 ft². If height is 1 ft more than base, what is the height?' },
+options: [
+{ ar: '<span class="math-display">9 ft</span>', en: '<span class="math-display">9 ft</span>' },
+{ ar: '<span class="math-display">8 ft</span>', en: '<span class="math-display">8 ft</span>' },
+{ ar: '<span class="math-display">12 ft</span>', en: '<span class="math-display">12 ft</span>' },
+{ ar: '<span class="math-display">6 ft</span>', en: '<span class="math-display">6 ft</span>' }
+],
+correct: 0,
+answer: { ar: '½b(b+1) = 36 → b² + b - 72 = 0 → (b+9)(b-8) = 0 → b = 8. الارتفاع = 9 ft', en: '½b(b+1) = 36 → b² + b - 72 = 0 → (b+9)(b-8) = 0 → b = 8. Height = 9 ft' }
+},
+{
+q: { ar: 'حلل: <span class="math-display">q² + 11qr + 18r²</span>', en: 'Factor: <span class="math-display">q² + 11qr + 18r²</span>' },
+options: [
+{ ar: '<span class="math-display">(q + 2r)(q + 9r)</span>', en: '<span class="math-display">(q + 2r)(q + 9r)</span>' },
+{ ar: '<span class="math-display">(q + 3r)(q + 6r)</span>', en: '<span class="math-display">(q + 3r)(q + 6r)</span>' },
+{ ar: '<span class="math-display">(q + r)(q + 18r)</span>', en: '<span class="math-display">(q + r)(q + 18r)</span>' },
+{ ar: '<span class="math-display">(q + 2r)(q + 6r)</span>', en: '<span class="math-display">(q + 2r)(q + 6r)</span>' }
+],
+correct: 0,
+answer: { ar: 'نبحث عن عددين حاصل ضربهما 18 ومجموعهما 11: 2 و 9. إذن (q+2r)(q+9r)', en: 'Find two numbers with product 18 and sum 11: 2 and 9. So (q+2r)(q+9r)' }
+},
+{
+q: { ar: 'حل المعادلة: <span class="math-display">y² - 13y - 90 = 0</span>', en: 'Solve: <span class="math-display">y² - 13y - 90 = 0</span>' },
+options: [
+{ ar: '<span class="math-display">y = 18 أو y = -5</span>', en: '<span class="math-display">y = 18 or y = -5</span>' },
+{ ar: '<span class="math-display">y = -18 أو y = 5</span>', en: '<span class="math-display">y = -18 or y = 5</span>' },
+{ ar: '<span class="math-display">y = 10 أو y = -9</span>', en: '<span class="math-display">y = 10 or y = -9</span>' },
+{ ar: '<span class="math-display">y = 15 أو y = -6</span>', en: '<span class="math-display">y = 15 or y = -6</span>' }
+],
+correct: 0,
+answer: { ar: '(y-18)(y+5) = 0 → y = 18 أو y = -5', en: '(y-18)(y+5) = 0 → y = 18 or y = -5' }
+}
+]
+}
+]
+};
+
+function shuffleArray(array) {
+const arr = [...array];
+for (let i = arr.length - 1; i > 0; i--) {
+const j = Math.floor(rng() * (i + 1));
+[arr[i], arr[j]] = [arr[j], arr[i]];
+}
+return arr;
+}
+
+let examData;
+let correctAnswersMap = {};
+let currentLang = 'ar';
+let timeRemaining = TOTAL_TIME;
+let timerInterval;
+
+function prepareShuffledExam() {
+rng = mulberry32(currentSeed);
+examData = JSON.parse(JSON.stringify(originalExamData));
+correctAnswersMap = {};
+let globalIdx = 0;
+examData.sections.forEach((section) => {
+section.questions = shuffleArray(section.questions);
+section.questions.forEach((q) => {
+const optionsWithCorrect = q.options.map((opt, idx) => ({
+option: opt,
+isCorrect: idx === q.correct
+}));
+const shuffledOptions = shuffleArray(optionsWithCorrect);
+q.options = shuffledOptions.map(o => o.option);
+const newCorrectIndex = shuffledOptions.findIndex(o => o.isCorrect);
+q.correct = newCorrectIndex;
+correctAnswersMap[globalIdx] = String.fromCharCode(97 + newCorrectIndex);
+globalIdx++;
+});
+});
+}
+
+function reshuffleExam() {
+const confirmMsg = currentLang === 'ar'
+? '🔄 سيتم إنشاء أسئلة جديدة ومسح إجاباتك الحالية. هل أنت متأكد؟'
+: '🔄 New questions will be generated and your current answers will be cleared. Are you sure?';
+if (confirm(confirmMsg)) {
+currentSeed = Date.now();
+timeRemaining = TOTAL_TIME;
+answersVisible = false;
+prepareShuffledExam();
+renderExam();
+saveState();
+alert(currentLang === 'ar' ? '🎲 تم تغيير الأسئلة! حظاً موفقاً! 🍀' : '🎲 Questions changed! Good luck! 🍀');
+window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+}
+
+function setLanguage(lang) {
+currentLang = lang;
+document.documentElement.lang = lang;
+document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+document.getElementById('btn-ar').classList.toggle('active', lang === 'ar');
+document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+document.body.classList.toggle('en-mode', lang === 'en');
+document.querySelectorAll('[data-ar][data-en]').forEach(el => {
+el.innerHTML = lang === 'ar' ? el.getAttribute('data-ar') : el.getAttribute('data-en');
+});
+renderExam();
+saveState(false);
+}
+
+function renderExam() {
+const container = document.getElementById('exam-content');
+const labels = {
+ar: { option: ['أ', 'ب', 'ج', 'د'], answer: '✅ الإجابة:' },
+en: { option: ['A', 'B', 'C', 'D'], answer: '✅ Answer:' }
+};
+const lbl = labels[currentLang];
+const isRTL = currentLang === 'ar';
+let html = '';
+let globalIdx = 0;
+examData.sections.forEach((section) => {
+html += `<section class="bg-white p-6 rounded-2xl shadow-lg border-2 border-purple-100">
+<h2 class="text-xl font-bold mb-4 text-purple-700">${section.title[currentLang]}</h2>
+<ol class="space-y-4 text-sm">`;
+section.questions.forEach((q) => {
+const borderSide = isRTL ? 'border-r-4 pr-4' : 'border-l-4 pl-4';
+html += `<li class="${borderSide} border-purple-400 py-2" id="q-${globalIdx}">
+<strong>${globalIdx + 1}.</strong> ${q.q[currentLang]}<br>`;
+q.options.forEach((opt, oIdx) => {
+const radioSide = isRTL ? 'mr-4 ml-2' : 'ml-4 mr-2';
+html += `<label class="cursor-pointer block mt-1 ${isRTL ? 'mr-4' : 'ml-4'} hover:bg-purple-50 rounded-lg p-1 transition">
+<input type="radio" name="q${globalIdx}" value="${String.fromCharCode(97 + oIdx)}" class="${radioSide}">
+${lbl.option[oIdx]}) ${opt[currentLang]}
+</label>`;
+});
+html += `<div class="answer-box text-green-700 mt-2 font-medium ${answersVisible ? '' : 'hidden'} bg-green-50 rounded-lg p-2">
+${lbl.answer} ${lbl.option[q.correct]}) ${q.options[q.correct][currentLang]} — ${q.answer[currentLang]}
+</div></li>`;
+globalIdx++;
+});
+html += `</ol></section>`;
+});
+container.innerHTML = html;
+}
+
+function startTimer() {
+document.getElementById('timer-container').style.display = 'block';
+updateTimerDisplay();
+timerInterval = setInterval(() => {
+timeRemaining--;
+updateTimerDisplay();
+if (timeRemaining % 5 === 0) saveState(false);
+if (timeRemaining <= 300) document.getElementById('timer').classList.add('timer-warning');
+if (timeRemaining <= 0) {
+clearInterval(timerInterval);
+alert(currentLang === 'ar' ? "⏰ انتهى الوقت! سأصحح إجاباتك الآن." : "⏰ Time's up! Let me grade your answers.");
+gradeExam();
+}
+}, 1000);
+}
+
+function updateTimerDisplay() {
+const minutes = Math.floor(timeRemaining / 60);
+const seconds = timeRemaining % 60;
+document.getElementById('timer').textContent = `${minutes.toString().padStart(2,'0')}:${seconds.toString().padStart(2,'0')}`;
+}
+
+function toggleAnswers() {
+answersVisible = !answersVisible;
+document.querySelectorAll('.answer-box').forEach(el => {
+el.classList.toggle('hidden', !answersVisible);
+});
+saveState(false);
+}
+
+function gradeExam() {
+let correctCount = 0;
+const sectionScores = new Array(TOTAL_SECTIONS).fill(0);
+for (let i = 0; i < TOTAL_QUESTIONS; i++) {
+const selected = document.querySelector(`input[name="q${i}"]:checked`);
+const li = document.getElementById(`q-${i}`);
+const correctAnswer = correctAnswersMap[i];
+if (li) {
+const isCorrect = selected && selected.value === correctAnswer;
+if (isCorrect) {
+correctCount++;
+li.classList.add('correct');
+li.classList.remove('incorrect');
+const sectionIndex = Math.floor(i / QUESTIONS_PER_SECTION);
+if (sectionIndex < TOTAL_SECTIONS) {
+sectionScores[sectionIndex]++;
+}
+} else {
+li.classList.add('incorrect');
+li.classList.remove('correct');
+}
+}
+}
+const score = Math.round((correctCount / TOTAL_QUESTIONS) * 100);
+document.getElementById('res-total').textContent = `${score} / 100`;
+document.getElementById('res-name').textContent = document.getElementById('studentName').value || (currentLang === 'ar' ? 'بطل' : 'Champion');
+document.getElementById('res-date').textContent = new Date().toLocaleDateString(currentLang === 'ar' ? 'ar-AE' : 'en-US');
+const performanceContainer = document.getElementById('sections-performance');
+performanceContainer.innerHTML = '';
+examData.sections.forEach((section, idx) => {
+performanceContainer.innerHTML += `
+<div class="flex justify-between items-center">
+<span class="text-gray-700">${section.title[currentLang]}</span>
+<span class="font-bold text-purple-700">${sectionScores[idx]}/${QUESTIONS_PER_SECTION}</span>
+</div>`;
+});
+const badge = document.getElementById('success-badge');
+document.getElementById('success-percent').textContent = `${score}%`;
+if (currentLang === 'ar') {
+if (score >= 90) { badge.textContent = '🌟 ممتاز جداً! 🌟'; badge.className = 'success-badge grade-excellent'; }
+else if (score >= 75) { badge.textContent = '👏 ممتاز! 👏'; badge.className = 'success-badge grade-good'; }
+else if (score >= 50) { badge.textContent = '👍 جيد'; badge.className = 'success-badge grade-pass'; }
+else { badge.textContent = '💪 حاول مرة أخرى'; badge.className = 'success-badge grade-fail'; }
+} else {
+if (score >= 90) { badge.textContent = '🌟 Outstanding! 🌟'; badge.className = 'success-badge grade-excellent'; }
+else if (score >= 75) { badge.textContent = '👏 Excellent! 👏'; badge.className = 'success-badge grade-good'; }
+else if (score >= 50) { badge.textContent = '👍 Good'; badge.className = 'success-badge grade-pass'; }
+else { badge.textContent = '💪 Try Again'; badge.className = 'success-badge grade-fail'; }
+}
+document.getElementById('results-panel').classList.remove('hidden');
+document.getElementById('results-panel').scrollIntoView({ behavior: 'smooth' });
+if (timerInterval) clearInterval(timerInterval);
+}
+
+function sendResultsToEmail() {
+const btn = document.getElementById('sendEmailBtn');
+const status = document.getElementById('emailStatus');
+btn.disabled = true;
+btn.textContent = currentLang === 'ar' ? '⏳ جاري الإرسال...' : '⏳ Sending...';
+const name = document.getElementById('studentName').value || 'N/A';
+const studentClass = document.getElementById('studentClass').value || 'N/A';
+const date = document.getElementById('examDate').value || new Date().toLocaleDateString();
+const score = document.getElementById('res-total').textContent;
+const successRate = document.getElementById('success-percent').textContent;
+const badge = document.getElementById('success-badge').textContent;
+let questionsHTML = '';
+let globalIdx = 0;
+examData.sections.forEach((section, sectionIdx) => {
+questionsHTML += `<tr style="background: linear-gradient(135deg, #7c3aed, #ec4899); color: white;">
+<td colspan="5" style="padding: 12px; font-weight: bold; font-size: 14px;">
+📌 ${currentLang === 'ar' ? 'القسم' : 'Section'} ${sectionIdx + 1}: ${section.title[currentLang]}
+</td></tr>`;
+section.questions.forEach((q) => {
+const selected = document.querySelector(`input[name="q${globalIdx}"]:checked`);
+const selectedValue = selected ? selected.value : null;
+const correctValue = correctAnswersMap[globalIdx];
+const isCorrect = selectedValue === correctValue;
+let studentAnswerText = currentLang === 'ar' ? '❌ لم يجب' : '❌ No answer';
+let studentAnswerColor = '#dc2626';
+if (selectedValue) {
+const selectedIndex = selectedValue.charCodeAt(0) - 97;
+studentAnswerText = q.options[selectedIndex][currentLang];
+studentAnswerColor = isCorrect ? '#059669' : '#dc2626';
+}
+const correctAnswerText = q.options[q.correct][currentLang];
+const rowBg = isCorrect ? '#f0fdf4' : '#fef2f2';
+const borderLeft = isCorrect ? '4px solid #10b981' : '4px solid #ef4444';
+questionsHTML += `<tr style="background: ${rowBg}; border-right: ${borderLeft};">
+<td style="padding: 10px; border: 1px solid #e5e7eb; text-align: center; font-weight: bold; vertical-align: top; width: 35px;">${globalIdx + 1}</td>
+<td style="padding: 10px; border: 1px solid #e5e7eb; vertical-align: top; width: 35%;">
+<strong style="color: #5b21b6;">${currentLang === 'ar' ? '❓ السؤال:' : '❓ Question:'}</strong><br>
+<span style="color: #374151; font-size: 13px;">${q.q[currentLang]}</span>
+</td>
+<td style="padding: 10px; border: 1px solid #e5e7eb; vertical-align: top; width: 22%;">
+<strong style="color: ${studentAnswerColor};">${currentLang === 'ar' ? '✍️ إجابة الطالب:' : '✍️ Student Answer:'}</strong><br>
+<span style="color: ${studentAnswerColor}; font-size: 13px;">${studentAnswerText}</span>
+</td>
+<td style="padding: 10px; border: 1px solid #e5e7eb; vertical-align: top; width: 22%;">
+<strong style="color: #059669;">${currentLang === 'ar' ? '✅ الإجابة الصحيحة:' : '✅ Correct Answer:'}</strong><br>
+<span style="color: #059669; font-size: 13px;">${correctAnswerText}</span>
+</td>
+<td style="padding: 10px; border: 1px solid #e5e7eb; text-align: center; vertical-align: middle; width: 60px;">
+${isCorrect
+? '<span style="font-size: 24px;">✅</span><br><span style="color: #059669; font-weight: bold; font-size: 11px;">' + (currentLang === 'ar' ? 'صحيح' : 'Correct') + '</span>'
+: '<span style="font-size: 24px;">❌</span><br><span style="color: #dc2626; font-weight: bold; font-size: 11px;">' + (currentLang === 'ar' ? 'خطأ' : 'Wrong') + '</span>'}
+</td></tr>`;
+globalIdx++;
+});
+});
+const answersHTML = `
+<div style="font-family: 'Segoe UI', Tahoma, Arial, sans-serif; direction: ${currentLang === 'ar' ? 'rtl' : 'ltr'};">
+<div style="background: linear-gradient(135deg, #7c3aed, #ec4899); color: white; padding: 20px; border-radius: 10px 10px 0 0; text-align: center;">
+<h2 style="margin: 0; font-size: 22px;">📚 ${currentLang === 'ar' ? 'نتيجة امتحان المراجعة الشامل' : 'Comprehensive Review Exam Result'}</h2>
+<p style="margin: 5px 0 0 0; opacity: 0.9;">${currentLang === 'ar' ? 'الصف العاشر - عام (رياضيات)' : 'Grade 10 - General (Mathematics)'}</p>
+</div>
+<div style="background: #f5f3ff; padding: 15px; border: 1px solid #ddd6fe;">
+<table style="width: 100%; border-collapse: collapse;">
+<tr>
+<td style="padding: 8px; font-weight: bold; color: #5b21b6;">${currentLang === 'ar' ? '😊 الاسم:' : '😊 Name:'}</td>
+<td style="padding: 8px;">${name}</td>
+<td style="padding: 8px; font-weight: bold; color: #5b21b6;">${currentLang === 'ar' ? '🏫 الشعبة:' : '🏫 Class:'}</td>
+<td style="padding: 8px;">${studentClass}</td>
+</tr>
+<tr>
+<td style="padding: 8px; font-weight: bold; color: #5b21b6;">${currentLang === 'ar' ? '📅 التاريخ:' : '📅 Date:'}</td>
+<td style="padding: 8px;">${date}</td>
+<td style="padding: 8px; font-weight: bold; color: #5b21b6;">${currentLang === 'ar' ? '🏆 التقدير:' : '🏆 Grade:'}</td>
+<td style="padding: 8px;">${badge}</td>
+</tr>
+</table>
+</div>
+<div style="background: white; padding: 20px; text-align: center; border-bottom: 2px solid #e5e7eb;">
+<div style="display: inline-block; margin: 0 15px;">
+<div style="font-size: 32px; font-weight: bold; color: #7c3aed;">${score}</div>
+<div style="color: #6b7280; font-size: 13px;">${currentLang === 'ar' ? 'الدرجة الكلية' : 'Total Score'}</div>
+</div>
+<div style="display: inline-block; margin: 0 15px;">
+<div style="font-size: 32px; font-weight: bold; color: #059669;">${successRate}%</div>
+<div style="color: #6b7280; font-size: 13px;">${currentLang === 'ar' ? 'نسبة النجاح' : 'Success Rate'}</div>
+</div>
+</div>
+<h3 style="background: #f3f4f6; padding: 12px; margin: 0; color: #1f2937; border-bottom: 2px solid #d1d5db;">
+📝 ${currentLang === 'ar' ? 'تفاصيل الأسئلة والإجابات الكاملة' : 'Full Questions & Answers Details'}
+</h3>
+<table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+<thead>
+<tr style="background: #7c3aed; color: white;">
+<th style="padding: 10px; border: 1px solid #6d28d9; width: 35px;">#</th>
+<th style="padding: 10px; border: 1px solid #6d28d9; width: 35%;">${currentLang === 'ar' ? 'السؤال' : 'Question'}</th>
+<th style="padding: 10px; border: 1px solid #6d28d9; width: 22%;">${currentLang === 'ar' ? 'إجابة الطالب' : 'Student Answer'}</th>
+<th style="padding: 10px; border: 1px solid #6d28d9; width: 22%;">${currentLang === 'ar' ? 'الإجابة الصحيحة' : 'Correct Answer'}</th>
+<th style="padding: 10px; border: 1px solid #6d28d9; width: 60px;">${currentLang === 'ar' ? 'النتيجة' : 'Result'}</th>
+</tr>
+</thead>
+<tbody>${questionsHTML}</tbody>
+</table>
+<div style="background: linear-gradient(135deg, #f5f3ff, #ede9fe); padding: 15px; border-radius: 0 0 10px 10px; border-top: 2px solid #7c3aed;">
+<p style="margin: 0; color: #5b21b6; text-align: center; font-size: 13px;">
+📚 <strong>${currentLang === 'ar' ? 'أحسنت يا بطل! استمر في المراجعة والنجاح!' : 'Great job, champion! Keep reviewing and succeeding!'}</strong> 📚
+</p>
+<p style="margin: 5px 0 0 0; color: #5b21b6; text-align: center; font-size: 12px;">
+${currentLang === 'ar' ? 'تم إرسال هذا التقرير تلقائياً | Mr. Mohammed Hesham' : 'This report was automatically sent | Mr. Mohammed Hesham'}
+</p>
+</div>
+</div>`;
+emailjs.send(SERVICE_ID, TEMPLATE_ID, {
+to_email: TARGET_EMAIL,
+student_name: name,
+student_class: studentClass,
+exam_date: date,
+total_score: score,
+success_rate: successRate,
+grade: badge,
+answers_table: answersHTML
+}).then(() => {
+status.textContent = currentLang === 'ar' ? '✅ تم إرسال نتيجتك للمعلم!' : '✅ Your result was sent to the teacher!';
+status.style.color = '#059669';
+btn.textContent = currentLang === 'ar' ? '✓ تم الإرسال' : '✓ Sent';
+}).catch(err => {
+status.textContent = currentLang === 'ar' ? '❌ حدث خطأ، حاول مرة أخرى' : '❌ Something went wrong, try again';
+status.style.color = '#dc2626';
+btn.disabled = false;
+btn.textContent = currentLang === 'ar' ? '📧 حاول مرة أخرى' : '📧 Try Again';
+console.error('EmailJS Error:', err);
+});
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+const savedState = loadState();
+if (savedState && savedState.seed) {
+currentSeed = savedState.seed;
+currentLang = savedState.lang || 'ar';
+timeRemaining = savedState.timeRemaining !== undefined ? savedState.timeRemaining : TOTAL_TIME;
+answersVisible = savedState.answersVisible || false;
+document.documentElement.lang = currentLang;
+document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
+document.getElementById('btn-ar').classList.toggle('active', currentLang === 'ar');
+document.getElementById('btn-en').classList.toggle('active', currentLang === 'en');
+document.body.classList.toggle('en-mode', currentLang === 'en');
+document.querySelectorAll('[data-ar][data-en]').forEach(el => {
+el.innerHTML = currentLang === 'ar' ? el.getAttribute('data-ar') : el.getAttribute('data-en');
+});
+} else {
+currentSeed = Date.now();
+}
+prepareShuffledExam();
+renderExam();
+if (savedState) {
+if (savedState.studentName) document.getElementById('studentName').value = savedState.studentName;
+if (savedState.studentClass) document.getElementById('studentClass').value = savedState.studentClass;
+if (savedState.examDate) document.getElementById('examDate').value = savedState.examDate;
+if (savedState.answers) restoreAnswers(savedState.answers);
+}
+setupAnswerListeners();
+setupInputListeners();
+startTimer();
+});
+
+window.addEventListener('beforeunload', () => saveState(false));
+</script>
+</body>
+</html>
